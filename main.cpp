@@ -9,9 +9,9 @@ struct Student{
     string gender;
     int group;
     int id;
-    signed char exams[3] = {};
-    signed char tests[5] = {};
-    float avarageGrade;
+    int exams[3];
+    int tests[5];
+    float averageGrade;
 };
 
 
@@ -22,51 +22,59 @@ void clearStream() {
 }
 
 
-void showMenu(){
-    cout << "1. add new student";
-    cout << "2. edit student info";
-    cout << "3. show students";
-    cout << "4. show students in group";
-    cout << "5. show top 3 student";
-    cout << "6. show students amount by gender";
-    cout << "7. show students's grades info";
-    cout << "8. show Ks' students";
-}
-
-
-void nextLine(int amount = 1){
-    for (int repeat = 0; repeat < amount; repeat++){
+void nextLine(int amount = 1) {
+    for (int repeat = 0; repeat < amount; repeat++) {
         cout << "\n";
     }
 }
 
+
+void showMenu(){
+    cout << "1. add new student"; nextLine();
+    cout << "2. edit student info"; nextLine();
+    cout << "3. show students"; nextLine();
+    cout << "4. show students in group"; nextLine();
+    cout << "5. show top 3 student"; nextLine();
+    cout << "6. show students amount by gender"; nextLine();
+    cout << "7. show students's grades info"; nextLine();
+    cout << "8. show Ks' students"; nextLine();
+}
+
 // student funcs;
 
-float avg(int exams[3], int tests[5]){
+float avg( int *exams, int *tests){
     float sum = 0;
     for (int i = 0; i < 3; i++){
-        sum += exams[i];
+        sum += float(*(exams + i));
     }
     for (int i = 0; i < 5; i++){
-        sum += tests[i];
+        sum += float(*(tests + i));
     }
-    return sum / 8.0;
+    return (sum / 8.0);
+}
+
+void showStudentInfo(int group, int id){
+
+
+
 }
 
 
-Student addStudent(string fullName, string gender, int group, int id, int Exams[3], int tests[5]){
-    Student student;
-    student.fullName = fullName;
-    student.gender = gender;
-    student.group = group;
-    student.id = id;
+void editStudent(int group, int id){
 
- return student;
+
+
+}
+
+
+void addStudent(Student student){
+
+
 }
 
 
 void addStudent(){
-    ifstream in("students.txt");
+    ifstream in("database.txt");
     string line;
     if ( in.is_open() ){
         while( getline(in, line) ) {
@@ -79,46 +87,78 @@ void addStudent(){
 
 
 int main(){
-    Student student;
-    string fullName;
-    string gender;
-    int group;
-    int id;
-    string enterExams;
-    int Exams[3] = {};
-    string enterTests;
-    int tests[5] = {};
-    float avarageGrade;
+    int problem;
+    const signed char examsAmount = 3;
+    const signed char testsAmount = 5;
 
-    for ( int problem = 0; problem < 100; problem ++ ){
+    Student students[60] = {};
+
+    Student student;
+
+
+    for ( int repeats = 0; repeats < 100; repeats++ ){
+        nextLine();
         showMenu();
-        cout << "choose problem";
+        cout << "choose problem: "; cin >> problem; nextLine();
 
         switch (problem) {
 
             case 1:
-                cout << "fullName: "; cin >> fullName; nextLine();
-                cout << "gender: "; cin >> gender; nextLine();
-                cout << "group: "; cin >> group; nextLine();
-                cout << "id: "; cin >> id; nextLine();
-                cout << "enter exam's grades by Space:"; cin >> enterExams;
-                cout << "enter test's grades by Space:"; cin >> enterTests;
+                cout << "fullName: "; cin >> student.fullName; clearStream();
+                cout << "gender: "; cin >> student.gender; clearStream();
+                cout << "group: "; cin >> student.group; clearStream();
+                cout << "id: "; cin >> student.id; clearStream();
+                cout << "enter exam's grades by Space: ";
+                for (int i = 0; i < examsAmount; i++) cin >> student.exams[i];
+                clearStream();
+                cout << "enter test's grades by Space: ";
+                for (int i = 0; i < testsAmount; i++) cin >> student.tests[i];
+                clearStream();
+                student.averageGrade = avg(student.exams, student.tests);
 
 
-                student.fullName = fullName;
-                student.gender = gender;
-                student.group = group;
-                student.id = id;
-                for (int i = 0; i < 3; i++){
-                    student.exams[i] = (signed char)enterExams[2 * i];
-                }
+//              вывод
+//                cout << student.fullName; nextLine();
+//                cout << student.group; nextLine();
+//                cout << student.id; nextLine();
+//                cout << student.gender; nextLine();
+//                for ( int i = 0; i < examsAmount; i ++ ){
+//                    cout << student.exams[i] << " ";
+//                }
+//                nextLine();
+//                for ( int i = 0; i < testsAmount; i ++ ){
+//                    cout << student.tests[i] << " ";
+//                }
+//                nextLine();
+//                cout << student.averageGrade;
+//                nextLine();
+//                break;
 
-                for (int i = 0; i < 5; i++){
-                    student.tests[i] = (signed char)enterTests[2 * i];
-                }
-                student.avarageGrade = avg(student.exams, student.tests);
+
+            case 2:
+                break;
+
+            case 3:
+                break;
+
+            case 4:
+                break;
+
+            case 5:
+                break;
+
+            case 6:
+                break;
+
+            case 7:
+                break;
+
+            case 8:
+                break;
+
+            default:
+                cout << "pu-pu-pu";
         }
-
     }
-    addStudent();
+//    addStudent();
 }
