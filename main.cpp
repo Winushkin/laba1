@@ -3,12 +3,17 @@
 #include <fstream>
 using namespace std;
 
+const signed char examsAmount = 3;
+const signed char testsAmount = 5;
+
+
+//system("cls");
 
 struct Student{
     string fullName;
     string gender;
     int group;
-    int id;
+    int id = 0;
     int exams[3];
     int tests[5];
     float averageGrade;
@@ -53,10 +58,31 @@ float avg( int *exams, int *tests){
     return (sum / 8.0);
 }
 
-void showStudentInfo(int group, int id){
+Student findStudent(int group, int id, int studentsAmount, Student *students){
+    for (int i = 0; i < studentsAmount; i++ ){
+        if ( (( students + i )->group == group) &&  (( students + i )->id == id) ) {
+            return *( students + i );
+        }
+    }
+    return Student();
+}
 
 
-
+void showStudentInfo(Student student){
+    cout << student.fullName; nextLine();
+    cout << student.group; nextLine();
+    cout << student.id; nextLine();
+    cout << student.gender; nextLine();
+    for ( int i = 0; i < examsAmount; i ++ ){
+        cout << student.exams[i] << " ";
+    }
+    nextLine();
+    for ( int i = 0; i < testsAmount; i ++ ){
+        cout << student.tests[i] << " ";
+    }
+    nextLine();
+    cout << student.averageGrade;
+    nextLine();
 }
 
 
@@ -71,6 +97,20 @@ void addStudent(Student student){
 
 
 }
+
+
+void showStudentsByGroup(int groupNum, int studentsAmount, Student *students, Student *group){
+    int index = 0;
+    for ( int i = 0; i < studentsAmount; i++ ){
+
+       if( ((students + i)->group) == groupNum ){
+           *(group + index) = *(students + i);
+           index++;
+       }
+
+    }
+}
+
 
 
 void addStudent(){
@@ -88,11 +128,10 @@ void addStudent(){
 
 int main(){
     int problem;
-    const signed char examsAmount = 3;
-    const signed char testsAmount = 5;
-
+    int groupNum, id;
+    int studentsAmount;
     Student students[60] = {};
-
+    Student group[30];
     Student student;
 
 
@@ -117,28 +156,22 @@ int main(){
                 student.averageGrade = avg(student.exams, student.tests);
 
 
-//              вывод
-//                cout << student.fullName; nextLine();
-//                cout << student.group; nextLine();
-//                cout << student.id; nextLine();
-//                cout << student.gender; nextLine();
-//                for ( int i = 0; i < examsAmount; i ++ ){
-//                    cout << student.exams[i] << " ";
-//                }
-//                nextLine();
-//                for ( int i = 0; i < testsAmount; i ++ ){
-//                    cout << student.tests[i] << " ";
-//                }
-//                nextLine();
-//                cout << student.averageGrade;
-//                nextLine();
-//                break;
-
 
             case 2:
                 break;
 
             case 3:
+                cout << "find student:"; nextLine();
+                cout << "group: "; cin >> groupNum;
+                cout << "id: "; cin >> id;
+                student = findStudent(groupNum, id, studentsAmount, students);
+                if ( student.fullName != "" ){
+                    showStudentInfo(student);
+                }else{
+                    cout << "Студент не найден";
+                }
+
+
                 break;
 
             case 4:
@@ -154,6 +187,10 @@ int main(){
                 break;
 
             case 8:
+                break;
+
+            case 9:
+                students[0] = Student("kirill", "m", 3372, 3);
                 break;
 
             default:
