@@ -57,7 +57,7 @@ int countStudents(Student *students);
 int countStudents(Student *students){
     studentsAmount = 0;
     for (int i = 0; i < 60; i++){
-        if ((students + i)->fullName.empty()){
+        if (!(students + i)->fullName.empty()){
             studentsAmount ++;
         }
     }
@@ -123,7 +123,7 @@ void addStudents2File(Student student){
 
 
 
-void readFile(Student *students){
+void readFile(Student students[]){
     Student student;
     int studentsCounter = 0;
     ifstream fin("/Users/kirillbelaev/CLionProjects/laba1Struct/db.txt");
@@ -131,11 +131,8 @@ void readFile(Student *students){
         cout << "file's not open";
     }
     else{
-        while (true){
+        while (fin.peek() != EOF){
             getline(fin, student.fullName);
-            if ( student.fullName.empty() ){
-                break;
-            }
             getline(fin, student.gender);
             fin >> student.group;
             fin >> student.id;
@@ -146,9 +143,8 @@ void readFile(Student *students){
             for (int i = 0; i < 5; i++) {
                 fin >> student.tests[i];
             }
+            fin.get();
             student.averageGrade = avg(student.exams, student.tests);
-            *(students + studentsCounter) = student;
-            studentsCounter ++;
             addStudentToArray(student, students);
         }
     }
@@ -170,6 +166,16 @@ int showStudentsByGroup(int groupNum, Student *students, Student *group){
 }
 
 
+void showStudentsByID(int id, Student *students){
+
+    for ( int i = 0 ; i < countStudents(students); i++ ) {
+        if ((students + i)->id == id) {
+            showStudentInfo(*(students + i));
+        }
+    }
+}
+
+
 void sortStudentsByGrades(Student *students){
     studentsAmount = countStudents(students);
     for (int i = 0; i < studentsAmount / 2; i++){
@@ -187,9 +193,8 @@ void sortStudentsByGrades(Student *students){
 }
 
 
-void addStudentToArray(Student student, Student *students){
-   *(students + countStudents(students)) = student;
-   studentsAmount++;
+void addStudentToArray(Student student, Student students[]){
+   students[countStudents(students)] = student;
 }
 
 
@@ -274,6 +279,7 @@ int main(){
                 break;
 
             case 8:
+
                 break;
 
             case 9:
