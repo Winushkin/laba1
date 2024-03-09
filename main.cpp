@@ -108,7 +108,7 @@ void showStudentInfo(Student student){
 }
 
 
-void editStudent(int group, int id){
+void editStudent(Student student, string parametr){ //#2
 
 
 
@@ -118,6 +118,88 @@ void editStudent(int group, int id){
 void addStudents2File(Student student){
 
 
+
+}
+
+
+bool if_Excellent(Student student){
+
+    for ( int i = 0; i < 3; i++ ){
+        if ( student.exams[i] != 5 ){
+            return false;
+        }
+    }
+
+    for ( int i = 0; i < 5; i++ ) {
+        if (student.tests[i] != 5) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool if_Good(Student student){
+
+    for ( int i = 0; i < 3; i++ ){
+        if ( student.exams[i] == 3 || student.exams[i] == 2){
+            return false;
+        }
+    }
+
+    for ( int i = 0; i < 5; i++ ) {
+        if ( student.tests[i] == 3 || student.tests[i] == 2 ) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool if_C_Student(Student student){
+    for ( int i = 0; i < 3; i++ ){
+        if ( student.exams[i] < 4 ){
+            return true;
+        }
+    }
+
+    for ( int i = 0; i < 5; i++ ) {
+        if ( student.tests[i] < 4 ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+
+void showStudentsByGrades(Student *students, int grade){
+
+    if ( grade == 5 ){
+
+        for ( int i = 0; i < countStudents(students); i++ ){
+
+            if ( if_Excellent(*(students + i)) ){
+                showStudentInfo(*(students + i));
+            }
+
+        }
+
+    }else if( grade == 4 ){
+        for ( int i = 0; i < countStudents(students); i++ ){
+            if (if_Good( *(students + i)) ){
+                showStudentInfo(*(students + i));
+            }
+        }
+
+    }else{
+        for ( int i = 0; i < countStudents(students); i++ ){
+            if (if_C_Student(*(students + i)) ){
+                showStudentInfo(*(students + i));
+            }
+        }
+    }
 
 }
 
@@ -149,9 +231,8 @@ void readFile(Student students[]){
         }
     }
     fin.close();
-
-
 }
+
 
 int showStudentsByGroup(int groupNum, Student *students, Student *group){
     studentsAmount = countStudents(students);
@@ -173,6 +254,27 @@ void showStudentsByID(int id, Student *students){
             showStudentInfo(*(students + i));
         }
     }
+}
+
+
+void countStudentsByGender(Student *students){
+
+    int MaleAmount = 0;
+    int FemaleAmount = 0;
+
+    for ( int i = 0; i < countStudents(students); i++ ){
+
+        if ( (students + i)->gender == "M") {
+            MaleAmount++;
+        }else {
+            FemaleAmount++;
+        }
+    }
+
+    cout << "Male amount: " << MaleAmount ;
+    nextLine();
+    cout << "Female amount: " << FemaleAmount ;
+
 }
 
 
@@ -273,13 +375,31 @@ int main(){
                 break;
 
             case 6:
+                countStudentsByGender(students);
+                nextLine();
                 break;
 
             case 7:
+
+                cout << "На повышке: ";
+                nextLine();
+                showStudentsByGrades(students, 5);
+                nextLine();
+
+                cout << "На стипе: ";
+                nextLine();
+                showStudentsByGrades(students, 4);
+                nextLine();
+
+                cout << "Без стипы: ";
+                nextLine();
+                showStudentsByGrades(students, 3);
+
                 break;
 
             case 8:
-
+                cout << "Введите номер в группе: "; cin >> id;
+                showStudentsByID(id, students);
                 break;
 
             case 9:
