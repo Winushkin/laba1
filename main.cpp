@@ -14,13 +14,14 @@ struct Student{
     string gender;
     int group;
     int id = 0;
-    int exams[3];
-    int tests[5];
+    int exams[examsAmount];
+    int tests[testsAmount];
     float averageGrade;
 };
 
 
 //main funcs;
+
 void clearStream() {
     cin.clear();
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -43,6 +44,7 @@ void showMenu(){
     cout << "6. show students amount by gender"; nextLine();
     cout << "7. show students's grades info"; nextLine();
     cout << "8. show Ks' students"; nextLine();
+    cout << "9. add students to file"; nextLine();
 }
 
 
@@ -52,6 +54,13 @@ void showMenu(){
 void addStudentToArray(Student student, Student *students);
 int countStudents(Student *students);
 
+
+bool isNormalGender(string gender){
+    if ( gender == "M" || gender == "F"){
+        return true;
+    }
+    return false;
+}
 
 
 int countStudents(Student *students){
@@ -108,21 +117,97 @@ void showStudentInfo(Student student){
 }
 
 
-void editStudent(Student student, string parametr){ //#2
+Student* getAddress(int group, int id, Student *students){
 
+    for (int i = 0; i < countStudents(students); i++){
 
-
+        if ((students + i)->id == id && (students + i)->group == group){
+            return (students + i);
+        }
+    }
+    return nullptr;
 }
 
 
-void addStudents2File(Student student){
+void editStudent(Student *student, string parametr){ //#2
+    string genderParam;
 
+    if ( parametr == "fullname" ){
+        cout << "enter new data: "; getline(cin, student->fullName);
 
+    }else if( parametr == "gender" ){
+        cout << "enter new data: "; cin >> genderParam; clearStream();
+        if ( isNormalGender(genderParam) ){
+            student->gender = genderParam;
+        }else{
+            cout << "Че за гендер, введи нормальный";
+        }
 
+    }else if( parametr == "group" ){
+        cout << "enter new data: "; cin >> student->group; clearStream();
+
+    }else if( parametr == "id" ){
+        cout << "enter new data: "; cin >> student->id; clearStream();
+
+    }else if( parametr == "exams marks" ){
+        cout << "enter new data: ";
+        for ( int i = 0; i < 3; i++){
+            cin >> student->exams[i];
+        }
+        clearStream();
+        student->averageGrade = avg(student->exams, student->tests);
+
+    }else if( parametr == "tests marks" ){
+        cout << "enter new data: ";
+        for ( int i = 0; i < 5; i++){
+            cin >> student->tests[i];
+        }
+        clearStream();
+        student->averageGrade = avg(student->exams, student->tests);
+
+    }else{
+        cout << "Изменяемый параметр не существует";
+    }
 }
 
 
-bool if_Excellent(Student student){
+
+void addStudents2File(Student *students){
+    ofstream out;
+    out.open("/Users/kirillbelaev/CLionProjects/laba1Struct/db.txt");
+    if (out.is_open())
+    {
+        for ( int i = 0; i < countStudents(students); i++ ){
+            out << (students + i)->fullName << endl;
+            out << (students + i)->gender << endl;
+            out << (students + i)->group << endl;
+            out << (students + i)->id << endl;
+            out << (students + i)->exams[0];
+            for ( int j = 1; j < 3; j++ ){
+                out << " " << (students + i)->exams[j];
+            }
+            out << endl;
+
+            out << (students + i)->tests[0];
+            for ( int j = 1; j < 5; j++ ){
+                out << " " << (students + i)->tests[j];
+            }
+            out << endl;
+
+            out << (students + i)->averageGrade << endl;
+
+        }
+    }
+    else{
+        cout << "Ошибка записи в файл";
+    }
+    out.close();
+    cout << "File has been written" << std::endl;
+}
+
+
+
+bool is_Excellent(Student student){
 
     for ( int i = 0; i < 3; i++ ){
         if ( student.exams[i] != 5 ){
@@ -139,7 +224,7 @@ bool if_Excellent(Student student){
 }
 
 
-bool if_Good(Student student){
+bool is_Good(Student student){
 
     for ( int i = 0; i < 3; i++ ){
         if ( student.exams[i] == 3 || student.exams[i] == 2){
@@ -156,7 +241,7 @@ bool if_Good(Student student){
 }
 
 
-bool if_C_Student(Student student){
+bool is_C_Student(Student student){
     for ( int i = 0; i < 3; i++ ){
         if ( student.exams[i] < 4 ){
             return true;
@@ -172,15 +257,13 @@ bool if_C_Student(Student student){
 }
 
 
-
-
 void showStudentsByGrades(Student *students, int grade){
 
     if ( grade == 5 ){
 
         for ( int i = 0; i < countStudents(students); i++ ){
 
-            if ( if_Excellent(*(students + i)) ){
+            if ( is_Excellent(*(students + i)) ){
                 showStudentInfo(*(students + i));
             }
 
@@ -188,14 +271,14 @@ void showStudentsByGrades(Student *students, int grade){
 
     }else if( grade == 4 ){
         for ( int i = 0; i < countStudents(students); i++ ){
-            if (if_Good( *(students + i)) ){
+            if ( is_Good( *(students + i)) ){
                 showStudentInfo(*(students + i));
             }
         }
 
     }else{
         for ( int i = 0; i < countStudents(students); i++ ){
-            if (if_C_Student(*(students + i)) ){
+            if ( is_C_Student(*(students + i)) ){
                 showStudentInfo(*(students + i));
             }
         }
@@ -204,10 +287,8 @@ void showStudentsByGrades(Student *students, int grade){
 }
 
 
-
 void readFile(Student students[]){
     Student student;
-    int studentsCounter = 0;
     ifstream fin("/Users/kirillbelaev/CLionProjects/laba1Struct/db.txt");
     if ( !fin.is_open() ){
         cout << "file's not open";
@@ -225,8 +306,8 @@ void readFile(Student students[]){
             for (int i = 0; i < 5; i++) {
                 fin >> student.tests[i];
             }
+            fin >> student.averageGrade;
             fin.get();
-            student.averageGrade = avg(student.exams, student.tests);
             addStudentToArray(student, students);
         }
     }
@@ -306,9 +387,11 @@ int main(){
     int index;
     int problem;
     int groupNum, id;
-    Student students[60] = {};
+    string editingParam;
+    Student students[60];
     Student group[30];
     Student student;
+    Student *studentPTR;
 
     readFile(students);
 
@@ -316,12 +399,12 @@ int main(){
     for ( int repeats = 0; repeats < 100; repeats++ ){
         nextLine();
         showMenu();
-        cout << "choose problem: "; cin >> problem; nextLine();
+        cout << "choose problem: "; cin >> problem; clearStream(); nextLine();
 
         switch (problem) {
 
             case 1:
-                cout << "fullName: "; cin >> student.fullName; clearStream();
+                cout << "fullName: "; getline(cin, student.fullName);
                 cout << "gender: "; cin >> student.gender; clearStream();
                 cout << "group: "; cin >> student.group; clearStream();
                 cout << "id: "; cin >> student.id; clearStream();
@@ -335,17 +418,32 @@ int main(){
 
                 addStudentToArray(student, students);
 
+                break;
+
 
 
             case 2:
+                cout << "Edit student info"; nextLine();
+                cout << "group: "; cin >> groupNum; clearStream();
+                cout << "id: "; cin >> id; clearStream();
+                studentPTR = getAddress(groupNum, id, students);
+                if (studentPTR) {
+                    if (!studentPTR->fullName.empty()) {
+                        cout << "Введите параметр, который хотите изменить( fullname, gender, group, id, exams marks, tests marks ): ";
+                        getline(cin, editingParam);
+                        editStudent(studentPTR, editingParam);
+                    }
+                }else{
+                    cout << "такого студента нет"; nextLine();
+                }
                 break;
 
             case 3:
                 cout << "find student:"; nextLine();
-                cout << "group: "; cin >> groupNum;
-                cout << "id: "; cin >> id;
+                cout << "group: "; cin >> groupNum; clearStream();
+                cout << "id: "; cin >> id; clearStream();
                 student = findStudent(groupNum, id, students);
-                if ( student.fullName != "" ){
+                if ( !student.fullName.empty() ){
                     nextLine();
                     showStudentInfo(student);
                 }else {
@@ -354,13 +452,14 @@ int main(){
                 break;
 
             case 4:
-                cout << "find students in group: "; cin >> groupNum;
+                cout << "find students in group: "; cin >> groupNum; clearStream(); nextLine();
                 index = showStudentsByGroup(groupNum, students, group);
                 if ( !index ){
                     cout << "no such group";
                 }else{
                     for ( int i = 0; i < index; i++ ){
                         showStudentInfo(group[i]);
+                        nextLine();
                     }
                 }
                 break;
@@ -398,11 +497,13 @@ int main(){
                 break;
 
             case 8:
-                cout << "Введите номер в группе: "; cin >> id;
+                cout << "Введите номер в группе: "; cin >> id; clearStream();
                 showStudentsByID(id, students);
                 break;
 
             case 9:
+                cout << "Сохранение изменений в файл"; nextLine();
+                addStudents2File(students);
                 break;
 
             default:
@@ -410,6 +511,7 @@ int main(){
                     showStudentInfo(*(students + i));
                     nextLine();
                 }
+
         }
     }
 //    addStudent();
