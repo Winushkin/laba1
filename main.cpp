@@ -44,17 +44,29 @@ void showMenu(){
     cout << "6. show students amount by gender"; nextLine();
     cout << "7. show students's grades info"; nextLine();
     cout << "8. show Ks' students"; nextLine();
-    cout << "9. add students to file"; nextLine();
+    cout << "9. add students to file"; nextLine(2);
+    cout << "IDZ"; nextLine();
+    cout << "10. Взять книгу из библиотеки"; nextLine();
+    cout << "11. вернуть книгу в библиотеку"; nextLine();
+    cout << "12. купить книгу"; nextLine();
+    cout << "13. Сохранить изменения библиотеки в файл"; nextLine();
+
+
 }
-
-
 
 // student funcs;
 
+// declarations
 void addStudentToArray(Student student, Student *students);
 int countStudents(Student *students);
+int showStudentsByGroup(int groupNum, Student *students, Student *group);
+bool isNormalGender(string gender);
+int countStudents(Student *students);
+float avg( int *exams, int *tests);
+Student findStudent(int group, int id, Student *students);
 
 
+//funcs
 bool isNormalGender(string gender){
     if ( gender == "M" || gender == "F"){
         return true;
@@ -149,6 +161,7 @@ void editStudent(Student *student, string parametr){ //#2
     }else if( parametr == "id" ){
         cout << "enter new data: "; cin >> student->id; clearStream();
 
+
     }else if( parametr == "exams marks" ){
         cout << "enter new data: ";
         for ( int i = 0; i < 3; i++){
@@ -204,7 +217,6 @@ void addStudents2File(Student *students){
     out.close();
     cout << "File has been written" << std::endl;
 }
-
 
 
 bool is_Excellent(Student student){
@@ -381,6 +393,101 @@ void addStudentToArray(Student student, Student students[]){
 }
 
 
+// IDZ;
+
+struct Book{
+    string title;
+    string author;
+    int publicationYear;
+    int pages;
+    int studentCard = 0;
+};
+
+//funcs;
+
+
+
+int countBooks(Book *books){
+    int booksAmount = 0;
+    for (int i = 0; i < 30; i++){
+        if (!(books + i)->title.empty()){
+            booksAmount ++;
+        }else{
+            break;
+        }
+    }
+    return booksAmount;
+}
+
+
+void addBookToArray(Book book, Book books[]){
+    books[countBooks(books)] = book;
+}
+
+
+Book *is_bookExists(Book *books, string title, string author){
+
+    for ( int i = 0; i < countBooks(books); i++ ){
+        if ( (books + i)->title == title && (books + i)->author == author ){
+            return (books + i);
+        }
+    }
+    return nullptr;
+}
+
+
+void readFile(Book books[]){
+    Book book;
+    ifstream fin("/Users/kirillbelaev/CLionProjects/laba1Struct/libdb.txt");
+    if ( !fin.is_open() ){
+        cout << "file's not open";
+    }
+    else{
+        while (fin.peek() != EOF){
+            getline(fin, book.title);
+            getline(fin, book.author);
+            fin >> book.publicationYear;
+            fin >> book.pages;
+            fin >> book.studentCard;
+
+            fin.get();
+            addBookToArray(book, books);
+        }
+    }
+    fin.close();
+}
+
+
+void addBooks2File(Book *books){
+    ofstream out;
+    out.open("/Users/kirillbelaev/CLionProjects/laba1Struct/libdb.txt");
+    if (out.is_open())
+    {
+        for ( int i = 0; i < countBooks(books); i++ ){
+            out << (books + i)->title << endl;
+            out << (books + i)->author << endl;
+            out << (books + i)->publicationYear << endl;
+            out << (books + i)->pages << endl;
+            out << (books + i)->studentCard << endl;
+        }
+    }
+    else{
+        cout << "Ошибка записи в файл";
+    }
+    out.close();
+    cout << "File has been written" << std::endl;
+}
+
+
+void showBookInfo(Book book) {
+    cout << "title: " << book.title; nextLine();
+    cout << "author: " << book.author; nextLine();
+    cout << "year of publication: " << book.publicationYear; nextLine();
+    cout << "pages amount: " << book.pages; nextLine();
+    cout << "student card: " << book.studentCard; nextLine();
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 int main(){
@@ -390,10 +497,14 @@ int main(){
     string editingParam;
     Student students[60];
     Student group[30];
+    Book books[30];
+    Book *bookPTR;
+    string title, author;
     Student student;
     Student *studentPTR;
 
     readFile(students);
+    readFile(books);
 
 
     for ( int repeats = 0; repeats < 100; repeats++ ){
@@ -417,7 +528,6 @@ int main(){
                 student.averageGrade = avg(student.exams, student.tests);
 
                 addStudentToArray(student, students);
-
                 break;
 
 
@@ -506,13 +616,86 @@ int main(){
                 addStudents2File(students);
                 break;
 
+            case 10:
+                cout << "book title: ";
+                getline(cin, title);
+                cout << "book author: ";
+                getline(cin, author);
+                bookPTR = is_bookExists(books, title, author);
+                if ( bookPTR ){
+                    cout << "student group: "; cin >> groupNum; clearStream();
+                    cout << "student id: "; cin >> id; clearStream();
+                    student = findStudent(groupNum, id, students);
+                    if ( !student.fullName.empty() ){
+                        bookPTR->studentCard = student.group * 100 + student.id;
+                    }else{
+                        cout << "No such student";
+                    }
+                }else{
+                    cout << "No such book";
+                }
+
+                break;
+
+            case 11:
+                cout << "book title: ";
+                getline(cin, title);
+                cout << "book author: ";
+                getline(cin, author);
+                bookPTR = is_bookExists(books, title, author);
+                if ( bookPTR ){
+                    cout << "student group: "; cin >> groupNum; clearStream();
+                    cout << "student id: "; cin >> id; clearStream();
+                    student = findStudent(groupNum, id, students);
+                    if ( !student.fullName.empty() ){
+                        bookPTR->studentCard = 0;
+                    }else{
+                        cout << "No such student";
+                    }
+                }else{
+                    cout << "No such book";
+                }
+
+                break;
+
+            case 12:
+                cout << "book title: ";
+                getline(cin, title);
+                cout << "book author: ";
+                getline(cin, author);
+                bookPTR = is_bookExists(books, title, author);
+                if ( bookPTR ){
+                    cout << "student group: "; cin >> groupNum; clearStream();
+                    cout << "student id: "; cin >> id; clearStream();
+                    student = findStudent(groupNum, id, students);
+                    if ( !student.fullName.empty() ){
+                        int len = countBooks(books);
+                        *bookPTR = Book();
+                        swap(*bookPTR, books[len - 1]);
+                    }else{
+                        cout << "No such student";
+                    }
+                }else{
+                    cout << "No such book";
+                }
+
+                break;
+
+            case 13:
+                addBooks2File(books);
+                break;
+
             default:
                 for ( int i = 0; i < countStudents(students); i++ ){
                     showStudentInfo(*(students + i));
                     nextLine();
                 }
 
+                for ( int i = 0; i < countBooks(books); i++ ){
+                    showBookInfo(*(books + i));
+                    nextLine();
+                }
+
         }
     }
-//    addStudent();
 }
