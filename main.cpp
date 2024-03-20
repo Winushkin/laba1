@@ -4,9 +4,12 @@
 using namespace std;
 
 
-const signed char examsAmount = 3;
-const signed char testsAmount = 5;
+const unsigned char examsAmount = 3;
+const unsigned char testsAmount = 5;
 int studentsAmount = 0;
+const unsigned char studentsArrayLen = 60;
+const unsigned char booksArrayLen = 30;
+const unsigned char groupArrayLen = 30;
 
 
 struct Student{
@@ -77,7 +80,7 @@ bool isNormalGender(string gender){
 
 int countStudents(Student *students){
     studentsAmount = 0;
-    for (int i = 0; i < 60; i++){
+    for (int i = 0; i < studentsArrayLen; i++){
         if (!(students + i)->fullName.empty()){
             studentsAmount ++;
         }
@@ -88,10 +91,10 @@ int countStudents(Student *students){
 
 float avg( int *exams, int *tests){
     float sum = 0;
-    for (int i = 0; i < 3; i++){
+    for (int i = 0; i < examsAmount; i++){
         sum += float(*(exams + i));
     }
-    for (int i = 0; i < 5; i++){
+    for (int i = 0; i < testsAmount; i++){
         sum += float(*(tests + i));
     }
     return (sum / 8.0);
@@ -164,7 +167,7 @@ void editStudent(Student *student, string parametr){ //#2
 
     }else if( parametr == "exams marks" ){
         cout << "enter new data: ";
-        for ( int i = 0; i < 3; i++){
+        for ( int i = 0; i < examsAmount; i++){
             cin >> student->exams[i];
         }
         clearStream();
@@ -172,7 +175,7 @@ void editStudent(Student *student, string parametr){ //#2
 
     }else if( parametr == "tests marks" ){
         cout << "enter new data: ";
-        for ( int i = 0; i < 5; i++){
+        for ( int i = 0; i < testsAmount; i++){
             cin >> student->tests[i];
         }
         clearStream();
@@ -196,13 +199,13 @@ void addStudents2File(Student *students){
             out << (students + i)->group << endl;
             out << (students + i)->id << endl;
             out << (students + i)->exams[0];
-            for ( int j = 1; j < 3; j++ ){
+            for ( int j = 1; j < examsAmount; j++ ){
                 out << " " << (students + i)->exams[j];
             }
             out << endl;
 
             out << (students + i)->tests[0];
-            for ( int j = 1; j < 5; j++ ){
+            for ( int j = 1; j < testsAmount; j++ ){
                 out << " " << (students + i)->tests[j];
             }
             out << endl;
@@ -221,13 +224,13 @@ void addStudents2File(Student *students){
 
 bool is_Excellent(Student student){
 
-    for ( int i = 0; i < 3; i++ ){
+    for ( int i = 0; i < examsAmount; i++ ){
         if ( student.exams[i] != 5 ){
             return false;
         }
     }
 
-    for ( int i = 0; i < 5; i++ ) {
+    for ( int i = 0; i < testsAmount; i++ ) {
         if (student.tests[i] != 5) {
             return false;
         }
@@ -238,13 +241,13 @@ bool is_Excellent(Student student){
 
 bool is_Good(Student student){
 
-    for ( int i = 0; i < 3; i++ ){
+    for ( int i = 0; i < examsAmount; i++ ){
         if ( student.exams[i] == 3 || student.exams[i] == 2){
             return false;
         }
     }
 
-    for ( int i = 0; i < 5; i++ ) {
+    for ( int i = 0; i < testsAmount; i++ ) {
         if ( student.tests[i] == 3 || student.tests[i] == 2 ) {
             return false;
         }
@@ -254,13 +257,13 @@ bool is_Good(Student student){
 
 
 bool is_C_Student(Student student){
-    for ( int i = 0; i < 3; i++ ){
+    for ( int i = 0; i < examsAmount; i++ ){
         if ( student.exams[i] < 4 ){
             return true;
         }
     }
 
-    for ( int i = 0; i < 5; i++ ) {
+    for ( int i = 0; i < testsAmount; i++ ) {
         if ( student.tests[i] < 4 ) {
             return true;
         }
@@ -312,10 +315,10 @@ void readFile(Student students[]){
             fin >> student.group;
             fin >> student.id;
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < examsAmount; i++) {
                 fin >> student.exams[i];
             }
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < testsAmount; i++) {
                 fin >> student.tests[i];
             }
             fin >> student.averageGrade;
@@ -409,7 +412,7 @@ struct Book{
 
 int countBooks(Book *books){
     int booksAmount = 0;
-    for (int i = 0; i < 30; i++){
+    for (int i = 0; i < booksArrayLen; i++){
         if (!(books + i)->title.empty()){
             booksAmount ++;
         }else{
@@ -495,9 +498,9 @@ int main(){
     int problem;
     int groupNum, id;
     string editingParam;
-    Student students[60];
-    Student group[30];
-    Book books[30];
+    Student students[studentsArrayLen];
+    Student group[groupArrayLen];
+    Book books[booksArrayLen];
     Book *bookPTR;
     string title, author;
     Student student;
